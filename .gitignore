@@ -1,0 +1,24 @@
+# General
+.DS_Store
+.Thumbs.db
+.idea/
+.vscode/
+*.iml
+*.log
+
+# Gradle / Java
+.gradle/
+build/
+bin/
+out/
+
+# Node / JS
+node_modules/
+dist/
+dist-ssr/
+*.local
+.env
+.env.local
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
