@@ -2,11 +2,10 @@
 import type { SearchProfile, SearchProfilePayload } from "@/types";
 
 type Props = {
-  onSubmit: (payload: SearchProfilePayload) => void;
+  onSubmit: (payload: SearchProfilePayload, options?: { execute?: boolean; clear?: boolean }) => void;
   loading?: boolean;
   initialValue?: SearchProfile;
   onCancel?: () => void;
-  onExecute?: () => void;
   executing?: boolean;
   lastExecutedAt?: string;
 };
@@ -18,23 +17,24 @@ export function SearchProfileForm({
   loading,
   initialValue,
   onCancel,
-  onExecute,
   executing,
   lastExecutedAt
 }: Props) {
   const [name, setName] = useState(initialValue?.name ?? "");
   const [query, setQuery] = useState(initialValue?.query ?? "");
   const [category, setCategory] = useState(initialValue?.category ?? "");
-  const [marketplaceId, setMarketplaceId] = useState(initialValue?.marketplaceId ?? defaultMarketplace);
+  const [marketplaceIds, setMarketplaceIds] = useState<string[]>(initialValue?.marketplaceIds ?? [defaultMarketplace]);
   const [minPrice, setMinPrice] = useState(initialValue?.minPrice?.toString() ?? "");
   const [maxPrice, setMaxPrice] = useState(initialValue?.maxPrice?.toString() ?? "");
   const [frequencyMinutes, setFrequencyMinutes] = useState(initialValue?.frequencyMinutes.toString() ?? "30");
+
+
 
   useEffect(() => {
     setName(initialValue?.name ?? "");
     setQuery(initialValue?.query ?? "");
     setCategory(initialValue?.category ?? "");
-    setMarketplaceId(initialValue?.marketplaceId ?? defaultMarketplace);
+    setMarketplaceIds(initialValue?.marketplaceIds ?? [defaultMarketplace]);
     setMinPrice(initialValue?.minPrice?.toString() ?? "");
     setMaxPrice(initialValue?.maxPrice?.toString() ?? "");
     setFrequencyMinutes(initialValue?.frequencyMinutes.toString() ?? "30");
@@ -42,16 +42,59 @@ export function SearchProfileForm({
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    let finalName = name.trim();
+    let finalQuery = query.trim();
+
+    if (!finalName && !finalQuery) {
+      return;
+    }
+
+    if (!finalName) finalName = finalQuery;
+    if (!finalQuery) finalQuery = finalName;
+
     const payload: SearchProfilePayload = {
-      name,
-      query,
+      name: finalName,
+      query: finalQuery,
       category: category.trim() || undefined,
-      marketplaceId,
-      minPrice: minPrice ? Number(minPrice) : undefined,
-      maxPrice: maxPrice ? Number(maxPrice) : undefined,
+      marketplaceIds,
+      minPrice: minPrice ? Number(minPrice) : 1,
+      maxPrice: maxPrice ? Number(maxPrice) : 999,
       frequencyMinutes: Number(frequencyMinutes)
     };
-    onSubmit(payload);
+
+    // Determine which action to take based on the button clicked
+    // Cast to any to access submitter which is standard in modern browsers but might be missing in some React types
+    const submitter = (event.nativeEvent as any).submitter as HTMLButtonElement | null;
+    const action = submitter?.name;
+
+    let options: { execute?: boolean; clear?: boolean } = {};
+
+    if (action === "save_execute") {
+      options = { execute: true };
+    } else if (action === "save_new") {
+      options = { clear: true };
+    } else if (action === "save") {
+      options = {};
+    } else {
+      // Fallback (e.g. Enter key might not set submitter in some browsers, or if programmatic)
+      // Default to primary action behavior
+      if (!initialValue?.id) {
+        options = { clear: true };
+      }
+    }
+
+    onSubmit(payload, options);
+  };
+
+  const handleMarketplaceChange = (id: string, checked: boolean) => {
+    setMarketplaceIds(prev => {
+      if (checked) {
+        return [...prev, id];
+      } else {
+        return prev.filter(m => m !== id);
+      }
+    });
   };
 
   const lastExecutionLabel = useMemo(() => {
@@ -64,29 +107,55 @@ export function SearchProfileForm({
     return `Letzte Ausfuehrung: ${new Date(lastExecutedAt).toLocaleString()}`;
   }, [initialValue?.id, lastExecutedAt]);
 
-  const canExecute = Boolean(onExecute && initialValue?.id);
+  const isEditing = Boolean(initialValue?.id);
 
   return (
     <form onSubmit={handleSubmit} className="card">
-      <h2>Suchprofil</h2>
+      <h2>{isEditing ? "Suchprofil bearbeiten" : "Neues Suchprofil"}</h2>
       <label>
         Name
-        <input value={name} onChange={(e) => setName(e.target.value)} required />
+        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Wird aus Suchbegriff übernommen wenn leer" />
       </label>
       <label>
         Suchbegriff
-        <input value={query} onChange={(e) => setQuery(e.target.value)} required />
+        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Wird aus Name übernommen wenn leer" />
       </label>
       <label>
         Kategorie
         <input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Optional" />
       </label>
-      <label>
-        Marktplatz
-        <select value={marketplaceId} onChange={(e) => setMarketplaceId(e.target.value)}>
-          <option value="kleinanzeigen">kleinanzeigen.de</option>
-        </select>
-      </label>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem", fontSize: "0.9rem" }}>
+        Marktplätze
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.5rem",
+          marginTop: "0.2rem",
+          border: "1px solid rgba(148, 163, 184, 0.4)",
+          borderRadius: "0.5rem",
+          padding: "0.6rem 0.8rem",
+          backgroundColor: "rgba(15, 23, 42, 0.7)"
+        }}>
+          <label style={{ flexDirection: "row", alignItems: "center", gap: "0.5rem", fontSize: "inherit", fontWeight: "normal" }}>
+            <input
+              type="checkbox"
+              checked={marketplaceIds.includes("kleinanzeigen")}
+              onChange={(e) => handleMarketplaceChange("kleinanzeigen", e.target.checked)}
+              style={{ width: "auto", margin: 0 }}
+            />
+            kleinanzeigen.de
+          </label>
+          <label style={{ flexDirection: "row", alignItems: "center", gap: "0.5rem", fontSize: "inherit", fontWeight: "normal" }}>
+            <input
+              type="checkbox"
+              checked={marketplaceIds.includes("manayga")}
+              onChange={(e) => handleMarketplaceChange("manayga", e.target.checked)}
+              style={{ width: "auto", margin: 0 }}
+            />
+            Manayga
+          </label>
+        </div>
+      </div>
       <div className="grid two-cols">
         <label>
           Min Preis
@@ -110,14 +179,32 @@ export function SearchProfileForm({
       </label>
       <p className="info-line muted">{lastExecutionLabel}</p>
       <div className="actions vertical">
-        <button type="submit" disabled={loading}>
-          {loading ? "Speichern..." : "Speichern"}
+        {/* Button 1: Save (and Clear if creating) */}
+        <button
+          type="submit"
+          name={isEditing ? "save" : "save_new"}
+          disabled={loading}
+        >
+          {loading
+            ? "Speichern..."
+            : isEditing
+              ? "Speichern"
+              : "Neues Suchprofil anlegen"}
         </button>
-        {canExecute && (
-          <button type="button" onClick={onExecute} disabled={executing}>
-            {executing ? "Suche laeuft..." : "Suche jetzt"}
-          </button>
-        )}
+
+        {/* Button 2: Save and Execute */}
+        <button
+          type="submit"
+          name="save_execute"
+          disabled={loading || executing}
+        >
+          {executing
+            ? "Suche laeuft..."
+            : isEditing
+              ? "Speichern und Suche starten"
+              : "Neues Suchprofil anlegen und Suche starten"}
+        </button>
+
         {onCancel && (
           <button type="button" onClick={onCancel} disabled={loading} className="ghost">
             Abbrechen

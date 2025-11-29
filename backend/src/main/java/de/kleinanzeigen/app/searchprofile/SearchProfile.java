@@ -33,7 +33,7 @@ public class SearchProfile {
 
     @NotBlank
     @Column(name = "marketplace_id", nullable = false)
-    private String marketplaceId;
+    private String marketplaceIds;
 
     @Embedded
     @AttributeOverrides({
@@ -51,17 +51,19 @@ public class SearchProfile {
         // for JPA
     }
 
-    private SearchProfile(String name, String query, String category, String marketplaceId, PriceRange priceRange, Integer frequencyMinutes) {
+    private SearchProfile(String name, String query, String category, java.util.List<String> marketplaceIds,
+            PriceRange priceRange, Integer frequencyMinutes) {
         this.name = name;
         this.query = query;
         this.category = category;
-        this.marketplaceId = marketplaceId;
+        this.marketplaceIds = String.join(",", marketplaceIds);
         this.priceRange = priceRange;
         this.frequencyMinutes = frequencyMinutes;
     }
 
-    public static SearchProfile create(String name, String query, String category, String marketplaceId, PriceRange priceRange, Integer frequencyMinutes) {
-        return new SearchProfile(name, query, category, marketplaceId, priceRange, frequencyMinutes);
+    public static SearchProfile create(String name, String query, String category,
+            java.util.List<String> marketplaceIds, PriceRange priceRange, Integer frequencyMinutes) {
+        return new SearchProfile(name, query, category, marketplaceIds, priceRange, frequencyMinutes);
     }
 
     public Long getId() {
@@ -80,8 +82,11 @@ public class SearchProfile {
         return category;
     }
 
-    public String getMarketplaceId() {
-        return marketplaceId;
+    public java.util.List<String> getMarketplaceIds() {
+        if (marketplaceIds == null || marketplaceIds.isBlank()) {
+            return java.util.Collections.emptyList();
+        }
+        return java.util.Arrays.asList(marketplaceIds.split(","));
     }
 
     public PriceRange getPriceRange() {
@@ -92,13 +97,13 @@ public class SearchProfile {
         return frequencyMinutes;
     }
 
-    public void update(String name, String query, String category, String marketplaceId, PriceRange priceRange, Integer frequencyMinutes) {
+    public void update(String name, String query, String category, java.util.List<String> marketplaceIds,
+            PriceRange priceRange, Integer frequencyMinutes) {
         this.name = name;
         this.query = query;
         this.category = category;
-        this.marketplaceId = marketplaceId;
+        this.marketplaceIds = String.join(",", marketplaceIds);
         this.priceRange = priceRange;
         this.frequencyMinutes = frequencyMinutes;
     }
 }
-

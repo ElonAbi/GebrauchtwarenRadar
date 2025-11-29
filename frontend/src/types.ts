@@ -3,7 +3,7 @@
   name: string;
   query: string;
   category?: string;
-  marketplaceId: string;
+  marketplaceIds: string[];
   minPrice?: number;
   maxPrice?: number;
   frequencyMinutes: number;
@@ -13,7 +13,7 @@ export type SearchProfilePayload = {
   name: string;
   query: string;
   category?: string;
-  marketplaceId: string;
+  marketplaceIds: string[];
   minPrice?: number;
   maxPrice?: number;
   frequencyMinutes: number;

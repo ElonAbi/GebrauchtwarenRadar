@@ -39,10 +39,9 @@ public class SearchProfileService {
                 request.name(),
                 request.query(),
                 request.category(),
-                request.marketplaceId(),
+                request.marketplaceIds(),
                 PriceRange.of(request.minPrice(), request.maxPrice()),
-                request.frequencyMinutes()
-        );
+                request.frequencyMinutes());
         SearchProfile saved = repository.save(profile);
         jobScheduler.scheduleProfile(saved);
         return toResponse(saved);
@@ -56,10 +55,9 @@ public class SearchProfileService {
                 request.name(),
                 request.query(),
                 request.category(),
-                request.marketplaceId(),
+                request.marketplaceIds(),
                 PriceRange.of(request.minPrice(), request.maxPrice()),
-                request.frequencyMinutes()
-        );
+                request.frequencyMinutes());
         jobScheduler.scheduleProfile(profile);
         return toResponse(profile);
     }
@@ -80,10 +78,9 @@ public class SearchProfileService {
                 profile.getName(),
                 profile.getQuery(),
                 profile.getCategory(),
-                profile.getMarketplaceId(),
+                profile.getMarketplaceIds(),
                 priceRange != null ? priceRange.getMin() : null,
                 priceRange != null ? priceRange.getMax() : null,
-                profile.getFrequencyMinutes()
-        );
+                profile.getFrequencyMinutes());
     }
 }

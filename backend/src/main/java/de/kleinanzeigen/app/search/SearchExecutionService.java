@@ -18,8 +18,7 @@ public class SearchExecutionService {
     public SearchExecutionService(
             SearchProfileRepository searchProfileRepository,
             MarketplaceClientRegistry marketplaceClientRegistry,
-            ResultFilterService resultFilterService
-    ) {
+            ResultFilterService resultFilterService) {
         this.searchProfileRepository = searchProfileRepository;
         this.marketplaceClientRegistry = marketplaceClientRegistry;
         this.resultFilterService = resultFilterService;
@@ -32,9 +31,21 @@ public class SearchExecutionService {
     }
 
     public SearchResult execute(SearchProfile profile) {
-        MarketplaceClient client = marketplaceClientRegistry.getClient(profile.getMarketplaceId());
-        List<SearchResultItem> items = client.search(profile);
-        List<SearchResultItem> filtered = resultFilterService.applyFilters(profile, items);
+        java.util.List<SearchResultItem> allItems = new java.util.ArrayList<>();
+
+        for (String marketplaceId : profile.getMarketplaceIds()) {
+            try {
+                MarketplaceClient client = marketplaceClientRegistry.getClient(marketplaceId);
+                List<SearchResultItem> items = client.search(profile);
+                allItems.addAll(items);
+            } catch (Exception e) {
+                // Log error but continue with other marketplaces
+                // You might want to log this properly
+                System.err.println("Failed to search marketplace " + marketplaceId + ": " + e.getMessage());
+            }
+        }
+
+        List<SearchResultItem> filtered = resultFilterService.applyFilters(profile, allItems);
         return new SearchResult(profile.getId(), Instant.now(), filtered);
     }
 }

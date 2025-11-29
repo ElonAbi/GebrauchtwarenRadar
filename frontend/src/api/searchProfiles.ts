@@ -7,7 +7,7 @@ const searchProfileSchema = z.object({
   name: z.string(),
   query: z.string(),
   category: z.string().nullish(),
-  marketplaceId: z.string(),
+  marketplaceIds: z.array(z.string()),
   minPrice: z.number().nullish(),
   maxPrice: z.number().nullish(),
   frequencyMinutes: z.number()

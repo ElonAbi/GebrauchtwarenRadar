@@ -18,7 +18,8 @@ function App() {
       setEditingProfile(null);
       return;
     }
-    if (!profiles.some((profile) => profile.id === selectedProfileId)) {
+    // Only auto-select if we had a selection that is no longer valid
+    if (selectedProfileId !== null && !profiles.some((profile) => profile.id === selectedProfileId)) {
       setSelectedProfileId(profiles[0].id);
     }
   }, [profiles, selectedProfileId]);
@@ -36,24 +37,37 @@ function App() {
     }
   }, [selectedProfile, profiles.length]);
 
-  const handleCreateOrUpdate = (payload: SearchProfilePayload) => {
+  const handleCreateOrUpdate = (
+    payload: SearchProfilePayload,
+    options?: { execute?: boolean; clear?: boolean }
+  ) => {
+    const onSuccess = (profile: SearchProfile) => {
+      if (options?.clear) {
+        setSelectedProfileId(null);
+        setEditingProfile(null);
+      } else {
+        setSelectedProfileId(profile.id);
+        setEditingProfile(profile);
+      }
+
+      if (options?.execute) {
+        executeMutation.mutate(profile.id, {
+          onSuccess: (result) => setLatestResult(result)
+        });
+      }
+    };
+
+    const onError = (error: Error) => {
+      alert("Fehler beim Speichern: " + error.message);
+    };
+
     if (editingProfile) {
       updateMutation.mutate(
         { id: editingProfile.id, payload },
-        {
-          onSuccess: (updated) => {
-            setEditingProfile(updated);
-            setSelectedProfileId(updated.id);
-          }
-        }
+        { onSuccess, onError }
       );
     } else {
-      createMutation.mutate(payload, {
-        onSuccess: (created) => {
-          setSelectedProfileId(created.id);
-          setEditingProfile(created);
-        }
-      });
+      createMutation.mutate(payload, { onSuccess, onError });
     }
   };
 
@@ -104,15 +118,24 @@ function App() {
             onSubmit={handleCreateOrUpdate}
             loading={createMutation.isPending || updateMutation.isPending}
             initialValue={editingProfile ?? undefined}
-            onCancel={editingProfile ? () => setEditingProfile(null) : undefined}
-            onExecute={handleExecute}
+            onCancel={editingProfile ? () => { setEditingProfile(null); setSelectedProfileId(null); } : undefined}
             executing={executeMutation.isPending}
             lastExecutedAt={lastExecutedAt}
           />
         </section>
         <SearchResults result={latestResult} />
         <section className="card compact profile-list">
-          <h2>Profil auswaehlen</h2>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+            <h2 style={{ margin: 0 }}>Profil auswaehlen</h2>
+            <button
+              type="button"
+              onClick={handleExecute}
+              disabled={!selectedProfileId || executeMutation.isPending}
+              style={{ fontSize: "0.9rem", padding: "0.4rem 0.8rem" }}
+            >
+              {executeMutation.isPending ? "Suche laeuft..." : "Suche starten"}
+            </button>
+          </div>
           {listQuery.isLoading ? (
             <p className="muted">Lade Profile...</p>
           ) : (
