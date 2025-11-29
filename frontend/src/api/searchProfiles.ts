@@ -69,7 +69,7 @@ export async function deleteSearchProfile(id: number): Promise<void> {
 }
 
 export async function executeSearch(id: number): Promise<SearchResult> {
-  const { data } = await apiClient.post(`/search/profiles/${id}/execute`);
+  const { data } = await apiClient.post(`/search-profiles/${id}/execute`);
   const parsed = searchResultSchema.parse(data);
   return {
     ...parsed,

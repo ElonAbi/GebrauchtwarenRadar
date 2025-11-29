@@ -136,24 +136,101 @@ export function SearchProfileForm({
           padding: "0.6rem 0.8rem",
           backgroundColor: "rgba(15, 23, 42, 0.7)"
         }}>
-          <label style={{ flexDirection: "row", alignItems: "center", gap: "0.5rem", fontSize: "inherit", fontWeight: "normal" }}>
+          <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" }}>
             <input
               type="checkbox"
+              id="mp-kleinanzeigen"
               checked={marketplaceIds.includes("kleinanzeigen")}
               onChange={(e) => handleMarketplaceChange("kleinanzeigen", e.target.checked)}
               style={{ width: "auto", margin: 0 }}
             />
-            kleinanzeigen.de
-          </label>
-          <label style={{ flexDirection: "row", alignItems: "center", gap: "0.5rem", fontSize: "inherit", fontWeight: "normal" }}>
+            <label htmlFor="mp-kleinanzeigen" style={{ margin: 0, fontWeight: "normal", fontSize: "inherit", cursor: "pointer" }}>
+              kleinanzeigen.de
+            </label>
+            <a href="https://www.kleinanzeigen.de" target="_blank" rel="noopener noreferrer" style={{ color: "inherit", display: "flex", alignItems: "center" }} onClick={(e) => e.stopPropagation()}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+          </div>
+          <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" }}>
             <input
               type="checkbox"
+              id="mp-manayga"
               checked={marketplaceIds.includes("manayga")}
               onChange={(e) => handleMarketplaceChange("manayga", e.target.checked)}
               style={{ width: "auto", margin: 0 }}
             />
-            Manayga
-          </label>
+            <label htmlFor="mp-manayga" style={{ margin: 0, fontWeight: "normal", fontSize: "inherit", cursor: "pointer" }}>
+              Manayga (Versandkostenfrei ab 50€)
+            </label>
+            <a href="https://manayga.de/" target="_blank" rel="noopener noreferrer" style={{ color: "inherit", display: "flex", alignItems: "center" }} onClick={(e) => e.stopPropagation()}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+          </div>
+          <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" }}>
+            <input
+              type="checkbox"
+              id="mp-ebay_rebuy"
+              checked={marketplaceIds.includes("ebay_rebuy")}
+              onChange={(e) => handleMarketplaceChange("ebay_rebuy", e.target.checked)}
+              style={{ width: "auto", margin: 0 }}
+            />
+            <label htmlFor="mp-ebay_rebuy" style={{ margin: 0, fontWeight: "normal", fontSize: "inherit", cursor: "pointer" }}>
+              eBay Rebuy (20% bei 5 Artikeln)
+            </label>
+            <a href="https://www.ebay.de/str/rebuyshop" target="_blank" rel="noopener noreferrer" style={{ color: "inherit", display: "flex", alignItems: "center" }} onClick={(e) => e.stopPropagation()}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+          </div>
+          <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" }}>
+            <input
+              type="checkbox"
+              id="mp-ebay_buchpark"
+              checked={marketplaceIds.includes("ebay_buchpark")}
+              onChange={(e) => handleMarketplaceChange("ebay_buchpark", e.target.checked)}
+              style={{ width: "auto", margin: 0 }}
+            />
+            <label htmlFor="mp-ebay_buchpark" style={{ margin: 0, fontWeight: "normal", fontSize: "inherit", cursor: "pointer" }}>
+              eBay Buchpark
+            </label>
+            <a href="https://www.ebay.de/str/buchparkausverkauf" target="_blank" rel="noopener noreferrer" style={{ color: "inherit", display: "flex", alignItems: "center" }} onClick={(e) => e.stopPropagation()}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+          </div>
+          <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" }}>
+            <input
+              type="checkbox"
+              id="mp-ebay_worldofbooks"
+              checked={marketplaceIds.includes("ebay_worldofbooks")}
+              onChange={(e) => handleMarketplaceChange("ebay_worldofbooks", e.target.checked)}
+              style={{ width: "auto", margin: 0 }}
+            />
+            <label htmlFor="mp-ebay_worldofbooks" style={{ margin: 0, fontWeight: "normal", fontSize: "inherit", cursor: "pointer" }}>
+              eBay worldofbooksde
+            </label>
+            <a href="https://www.ebay.de/str/worldofbooksde" target="_blank" rel="noopener noreferrer" style={{ color: "inherit", display: "flex", alignItems: "center" }} onClick={(e) => e.stopPropagation()}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+          </div>
         </div>
       </div>
       <div className="grid two-cols">

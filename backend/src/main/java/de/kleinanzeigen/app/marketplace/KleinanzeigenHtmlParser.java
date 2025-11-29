@@ -162,7 +162,7 @@ public class KleinanzeigenHtmlParser {
             return null;
         }
         String cleaned = text.strip();
-        return cleaned.isBlank() ? null : cleaned;
+        return cleaned.isBlank() ? null : "Kleinanzeigen - " + cleaned;
     }
 
     private Instant extractPublishedAt(Element container) {

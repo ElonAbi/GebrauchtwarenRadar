@@ -20,9 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class SearchProfileController {
 
     private final SearchProfileService service;
+    private final de.kleinanzeigen.app.search.SearchExecutionService executionService;
 
-    public SearchProfileController(SearchProfileService service) {
+    public SearchProfileController(SearchProfileService service,
+            de.kleinanzeigen.app.search.SearchExecutionService executionService) {
         this.service = service;
+        this.executionService = executionService;
     }
 
     @GetMapping
@@ -50,5 +53,10 @@ public class SearchProfileController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/execute")
+    public de.kleinanzeigen.app.search.SearchResult execute(@PathVariable Long id) {
+        return executionService.execute(id);
     }
 }
